@@ -142,7 +142,7 @@
                 <slot name="noResult" :search="search">No elements found. Consider changing the search query.</slot>
               </span>
             </li>
-            <li v-show="showNoOptions && (options.length === 0 && !search && !loading)">
+            <li v-show="showNoOptions && (filteredOptions.length === 0 && !search && !loading)">
               <span class="multiselect__option">
                 <slot name="noOptions">List is empty.</slot>
               </span>
