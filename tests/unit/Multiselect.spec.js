@@ -110,13 +110,13 @@ describe('Multiselect.vue', () => {
               .findAll('.multiselect__tag')
               .at(0)
               .text()
-          ).toContainEqual('1')
+          ).toEqual('1')
           expect(
             wrapper
               .findAll('.multiselect__tag')
               .at(1)
               .text()
-          ).toContainEqual('2')
+          ).toEqual('2')
         })
 
         test('should preselect passed array of objects', () => {
@@ -144,6 +144,31 @@ describe('Multiselect.vue', () => {
           ).toContainEqual('2')
         })
 
+        test('should preselect passed array of objects if trackBy is a Function', () => {
+          const wrapper = shallowMount(Multiselect, {
+            propsData: {
+              value: [{ id: '2', subid: '1' }, { id: '1', subid: '2' }],
+              options: [{ id: '1', subid: '1' }, { id: '1', subid: '2' }, { id: '2', subid: '1' }],
+              customLabel: ({id, subid}) => `${id}_${subid}`,
+              trackBy: ({id, subid}) => `${id}_${subid}`,
+              multiple: true
+            }
+          })
+          expect(wrapper.vm.internalValue).toEqual([{ id: '2', subid: '1' }, { id: '1', subid: '2' }])
+          expect(
+            wrapper
+              .findAll('.multiselect__tag')
+              .at(0)
+              .text()
+          ).toEqual('2_1')
+          expect(
+            wrapper
+              .findAll('.multiselect__tag')
+              .at(1)
+              .text()
+          ).toEqual('1_2')
+        })
+
         test('should set value to [] when passing null as selected', () => {
           const wrapper = shallowMount(Multiselect, {
             propsData: {
@@ -168,7 +193,7 @@ describe('Multiselect.vue', () => {
             }
           })
           expect(wrapper.vm.internalValue).toEqual(['1'])
-          expect(wrapper.find('.multiselect__single').text()).toContainEqual(
+          expect(wrapper.find('.multiselect__single').text()).toEqual(
             '1'
           )
         })
@@ -183,8 +208,23 @@ describe('Multiselect.vue', () => {
             }
           })
           expect(wrapper.vm.internalValue).toEqual([{ id: '2' }])
-          expect(wrapper.find('.multiselect__single').text()).toContainEqual(
+          expect(wrapper.find('.multiselect__single').text()).toEqual(
             '2'
+          )
+        })
+
+        test('should preselect passed object if trackBy is a Function', () => {
+          const wrapper = shallowMount(Multiselect, {
+            propsData: {
+              value: { id: '1', subid: '2' },
+              options: [{ id: '1', subid: '1' }, { id: '1', subid: '2' }, { id: '2', subid: '1' }],
+              customLabel: ({id, subid}) => `${id}_${subid}`,
+              trackBy: ({id, subid}) => `${id}_${subid}`
+            }
+          })
+          expect(wrapper.vm.internalValue).toEqual([{ id: '1', subid: '2' }])
+          expect(wrapper.find('.multiselect__single').text()).toEqual(
+            '1_2'
           )
         })
       })
@@ -199,7 +239,7 @@ describe('Multiselect.vue', () => {
           }
         })
         expect(wrapper.vm.internalValue).toEqual(['1'])
-        expect(wrapper.find('.multiselect__single').text()).toContainEqual('1')
+        expect(wrapper.find('.multiselect__single').text()).toEqual('1')
       })
 
       test('should preselect passed object', () => {
@@ -213,7 +253,7 @@ describe('Multiselect.vue', () => {
           }
         })
         expect(wrapper.vm.internalValue).toEqual([{ id: '2' }])
-        expect(wrapper.find('.multiselect__single').text()).toContainEqual('2')
+        expect(wrapper.find('.multiselect__single').text()).toEqual('2')
       })
     })
   })
@@ -1033,6 +1073,45 @@ describe('Multiselect.vue', () => {
     })
   })
 
+  describe('#getOptionKey()', () => {
+    test('should return option if trackBy is undefined', () => {
+      const wrapper = shallowMount(Multiselect, {
+        propsData: {
+          options: ['1', '2', '3']
+        }
+      })
+      const option = wrapper.vm.options[1]
+      expect(wrapper.vm.getOptionKey(option)).toBe(option)
+    })
+
+    test('should return option[trackBy] if trackBy is a String', () => {
+      const wrapper = shallowMount(Multiselect, {
+        propsData: {
+          multiple: true,
+          value: [],
+          options: [{ id: '1' }, { id: '2' }, { id: '3' }],
+          trackBy: 'id'
+        }
+      })
+      const option = wrapper.vm.options[1]
+      expect(wrapper.vm.getOptionKey(option)).toBe('2')
+    })
+
+    test('should return trackBy(option) if trackBy is a Function', () => {
+      const wrapper = shallowMount(Multiselect, {
+        propsData: {
+          value: [],
+          options: [{ id: '1', subid: '1' }, { id: '1', subid: '2' }, { id: '2', subid: '1' }],
+          label: 'id',
+          trackBy: ({id, subid}) => `${id}_${subid}`,
+          multiple: true
+        }
+      })
+      const option = wrapper.vm.options[1]
+      expect(wrapper.vm.getOptionKey(option)).toBe('1_2')
+    })
+  })
+
   describe('#getOptionLabel()', () => {
     test('should return empty string for undefined option', () => {
       const wrapper = shallowMount(Multiselect, {
@@ -1154,6 +1233,21 @@ describe('Multiselect.vue', () => {
       })
       const comp = wrapper.vm
       expect(comp.valueKeys).toEqual(['2'])
+    })
+
+    test('should return trackBy(option) value when multiple is FALSE and trackBy is a Function', () => {
+      const wrapper = shallowMount(Multiselect, {
+        propsData: {
+          label: 'id',
+          trackBy: ({id, subid}) => `${id}_${subid}`,
+          searchable: true,
+          multiple: false,
+          value: { id: '1', subid: '2' },
+          options: [{ id: '1', subid: '1' }, { id: '1', subid: '2' }, { id: '2', subid: '1' }]
+        }
+      })
+      const comp = wrapper.vm
+      expect(comp.valueKeys).toEqual(['1_2'])
     })
   })
 

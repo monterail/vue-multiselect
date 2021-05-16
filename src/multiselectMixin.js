@@ -112,10 +112,10 @@ export default {
     /**
      * Key to compare objects
      * @default 'id'
-     * @type {String}
+     * @type {String|Function}
      */
     trackBy: {
-      type: String
+      type: [String, Function]
     },
     /**
      * Label to look for in option Object
@@ -368,7 +368,7 @@ export default {
     },
     valueKeys () {
       if (this.trackBy) {
-        return this.internalValue.map(element => element[this.trackBy])
+        return this.internalValue.map(element => this.getOptionKey(element))
       } else {
         return this.internalValue
       }
@@ -456,9 +456,7 @@ export default {
      * @returns {Boolean} returns true if element is selected
      */
     isSelected (option) {
-      const opt = this.trackBy
-        ? option[this.trackBy]
-        : option
+      const opt = this.getOptionKey(option)
       return this.valueKeys.indexOf(opt) > -1
     },
     /**
@@ -468,6 +466,22 @@ export default {
      */
     isOptionDisabled (option) {
       return !!option.$isDisabled
+    },
+    /**
+     * Returns option[trackBy] if trackBy is a String
+     * Returns trackBy(option) result if trackBy is a Function
+     * Else returns option
+     *
+     * @param  {Object||String||Integer} Passed option
+     * @returns {String}
+    */
+    getOptionKey (option) {
+      /* istanbul ignore else */
+      if (typeof this.trackBy === 'string') return option[this.trackBy]
+      /* istanbul ignore else */
+      if (typeof this.trackBy === 'function') return this.trackBy(option)
+
+      return option
     },
     /**
      * Returns empty string when options is null/undefined
@@ -611,7 +625,7 @@ export default {
       }
 
       const index = typeof option === 'object'
-        ? this.valueKeys.indexOf(option[this.trackBy])
+        ? this.valueKeys.indexOf(this.getOptionKey(option))
         : this.valueKeys.indexOf(option)
 
       this.$emit('remove', option, this.id)
