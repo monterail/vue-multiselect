@@ -382,8 +382,8 @@ fieldset[disabled] .multiselect {
   position: absolute;
   right: 1px;
   top: 1px;
-  width: 48px;
-  height: 35px;
+  width: 40px;
+  height: 38px;
   background: #fff;
   display: block;
 }
