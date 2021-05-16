@@ -519,6 +519,9 @@ fieldset[disabled] .multiselect {
 .multiselect__single {
   padding-left: 5px;
   margin-bottom: 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .multiselect__tags-wrap {
