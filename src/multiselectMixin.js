@@ -664,12 +664,13 @@ export default {
       this.$emit('open', this.id)
     },
     /**
-     * Closes the multiselect’s dropdown.
+     * Closes the multiselect’s dropdown.S
      * Sets this.isOpen to FALSE
      */
-    deactivate () {
+    deactivate (event) {
       /* istanbul ignore else */
       if (!this.isOpen) return
+      if (event && event.relatedTarget && event.relatedTarget.offsetParent === this.$el) return
 
       this.isOpen = false
       /* istanbul ignore else  */
