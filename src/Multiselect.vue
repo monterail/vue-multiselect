@@ -115,7 +115,7 @@
                   :class="optionHighlight(index, option)"
                   @click.stop="select(option)"
                   @mouseenter.self="pointerSet(index)"
-                  :data-select="option && option.isTag ? tagPlaceholder : selectLabelText"
+                  :data-select="option && taggable && option.isTag ? tagPlaceholder : selectLabelText"
                   :data-selected="selectedLabelText"
                   :data-deselect="deselectLabelText"
                   class="multiselect__option">
