@@ -51,6 +51,7 @@
           :id="id"
           type="text"
           autocomplete="off"
+          lpignore="true"
           spellcheck="false"
           :placeholder="placeholder"
           :style="inputStyle"
