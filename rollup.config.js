@@ -31,7 +31,12 @@ export default [
     input: 'src/index.js',
     output: {
       format: 'iife',
-      file: 'dist/vue-multiselect.js'
+      file: 'dist/vue-multiselect.js',
+      name: 'VueMultiselect',
+      external: ['vue'],
+      globals: {
+        vue: 'Vue'
+      }
     },
     plugins: [
       css({output:'vue-multiselect.css'}),
